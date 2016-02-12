@@ -10,6 +10,7 @@ setup(name='PyStress',
       packages=['pystress'],
       install_requires=[
           'numpy',
-          'matplotlib'
+          'matplotlib',
+          'enum'
       ],
       zip_safe=False)
