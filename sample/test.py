@@ -13,9 +13,9 @@ def main():
     stress.plot_mohr_coulomb(c=0.0, phi=20.0)
 
     fig = plt.gcf()
-    fig.set_size_inches(7.0, 5.0)
+    fig.set_size_inches(3.4, 2.5)
 
-    plt.savefig('test-7.eps', dpi=600, format='eps')
+    plt.savefig('test-double-column.ps', dpi=600, format='ps')
 
     plt.show()
     

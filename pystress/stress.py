@@ -154,17 +154,18 @@ class StressState(object):
         """Return whether the stress tensor is symmetric."""
         return self.symmetric
 
-    def plot_stress(self):
+    def plot_stress(self, lw='-', color = 'k', fs1=12, fs2=10, ax=plt.gca(), hatch='',grids=False,fill=False,fc='w',set_lim=False):
         """Plot the stress state."""
-        self.fig = plt.figure(facecolor='w', figsize=(4,3), dpi=600)
-        self.ax = plt.subplot(aspect='equal')
+        self.ax = ax
+        self.ax.set_aspect('equal')
         plt.rc('text', usetex=True)
         plt.rc('font', family='serif')
 
         if self.dimension is Dimension.TwoD:
             circle_center = (np.max(self.principals) + np.min(self.principals)) / 2.0
-            circle = plt.Circle((circle_center,0.0),self.max_shear,color='k',fill=False)
-            self.fig.gca().add_artist(circle)
+            circle = plt.Circle((circle_center,0.0),self.max_shear,color=color,fill=fill,fc=fc)
+            circle.set_hatch(hatch)
+            self.ax.add_artist(circle)
         else:
             circle1_center = (self.principals[0] + self.principals[1]) / 2.0
             circle2_center = (self.principals[1] + self.principals[2]) / 2.0
@@ -172,17 +173,19 @@ class StressState(object):
             circle1_radius = (self.principals[0] - self.principals[1]) / 2.0
             circle2_radius = (self.principals[1] - self.principals[2]) / 2.0
             circle3_radius = (self.principals[0] - self.principals[2]) / 2.0
-            circle1 = plt.Circle((circle1_center,0.0),circle1_radius,color='k',fill=False)
-            circle2 = plt.Circle((circle2_center,0.0),circle2_radius,color='k',fill=False)
-            circle3 = plt.Circle((circle3_center,0.0),circle3_radius,color='k',fill=False)
-            self.fig.gca().add_artist(circle1)
-            self.fig.gca().add_artist(circle2)
-            self.fig.gca().add_artist(circle3)
+            circle1 = plt.Circle((circle1_center,0.0),circle1_radius,color=color,fill=fill,fc=fc)
+            circle1.set_hatch(hatch)
+            circle2 = plt.Circle((circle2_center,0.0),circle2_radius,color=color,fill=fill,fc=fc)
+            circle2.set_hatch(hatch)
+            circle3 = plt.Circle((circle3_center,0.0),circle3_radius,color=color,fill=fill,fc=fc)
+            circle3.set_hatch(hatch)
+            self.ax.add_artist(circle1)
+            self.ax.add_artist(circle2)
+            self.ax.add_artist(circle3)
 
-        plt.title("Stress State",fontsize=12, y=1.03)
-        plt.xlabel("$\sigma$",fontsize=10)
-        plt.ylabel("$\\tau$",fontsize=10)
-        self.ax.tick_params(labelsize=10)
+        self.ax.set_xlabel("$\sigma$",fontsize=fs2)
+        self.ax.set_ylabel("$\\tau$",fontsize=fs2)
+        self.ax.tick_params(labelsize=fs2)
 
         absolute = np.abs(self.principals)
         maxi = np.max(absolute)
@@ -192,23 +195,32 @@ class StressState(object):
             xmin = self.principals[-1]-xlim
         else:
             xmin = 0.0
-        
-        plt.xlim(xmin,self.principals[0]+xlim)
-        plt.ylim(0.0,1.1*self.max_shear)
-        plt.grid(b=True, which='major', color='gray', ls='--',axis='both',alpha=0.4)
+
+        if set_lim is True:
+            self.ax.set_xlim(xmin,self.principals[0]+xlim)
+            self.ax.set_ylim(0.0,1.1*self.max_shear)
+        if grids is True:
+            self.ax.grid(b=True, which='major', color='gray', ls='--',axis='both',alpha=0.7)
         
         return
 
-    def plot_mohr_coulomb(self, c = 0.0, phi = 30.0):
+    def plot_mohr_coulomb(self,
+                          c = 0.0,
+                          phi = 30.0,
+                          ax=plt.gca(),
+                          color='k',
+                          ls='-',
+                          lw=1):
+        self.ax=ax
         plt.rc('text', usetex=True)
         plt.rc('font', family='serif')
 
-        xlims = plt.xlim()
+        xlims = self.ax.get_xlim()
         slope = np.tan(radians(phi))
         p1 = [-c/slope, 0.0]
         p2 = [xlims[1], slope*xlims[1]+c]
 
-        plt.plot([p1[0],p2[0]],[p1[1],p2[1]],'-k',lw=1)
+        self.ax.plot([p1[0],p2[0]],[p1[1],p2[1]],ls=ls,color=color,lw=lw)
 
 
 
